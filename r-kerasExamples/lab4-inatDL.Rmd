@@ -1,0 +1,22 @@
+---
+title: "Lab 4 Deep Learning: iNaturalist"
+author: "Halina Do-Linh"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Lab 4 Deep Learning: iNaturalist
+
+# Setup
+
+# 1. 2 Species (binary classification) - neural net. Draw from 3.4 🍿 Movies (binary classification). You’ll need to pre-process the images to be a consistent shape first though – see 5.2.4 Data preprocessing.
+
+# 2. 2 Species (binary classification) - convolutional neural net. Draw from the dogs vs cats example.
+
+# 3. 10 Species (multi-class classification) - neural net. Draw from 3.5 📰 Newswires (multi-class classification).
+
+# 4. 10 Species (multi-class classification) - convolutional neural net. Draw from dogs vs cats example and update necessary values to go from binary to mult-class classification
