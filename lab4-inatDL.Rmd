@@ -11,7 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Lab 4 Deep Learning: iNaturalist
 
+The main lab that you'll turn in is to apply these techniques to a small subset of the iNaturalist species imagery. These data were downloaded from the links provided at [github.com/visipedia/inat_comp:2021/](https://github.com/visipedia/inat_comp/tree/master/2021). Of all the 10,000 species and many images for each from training (Train), training mini (Train Mini), validation (Val) and test images, you'll draw only from the Train Mini set of images:
+
+![](https://github.com/visipedia/inat_comp/raw/master/2021/assets/train_val_distribution.png)
+
 # Setup
+
+Here I am generating which species I am going to use
 
 # 1. 2 Species (binary classification) - neural net. Draw from 3.4 🍿 Movies (binary classification). You’ll need to pre-process the images to be a consistent shape first though – see 5.2.4 Data preprocessing.
 
