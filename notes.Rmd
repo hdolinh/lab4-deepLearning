@@ -1,0 +1,36 @@
+---
+title: "Notes"
+author: "Halina Do-Linh"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Notes
+
+```{r, echo=F, eval=F}
+# in Terminal:
+#   cd /courses/EDS232; mkdir 'inaturalist-2021'
+#   curl -o train_mini.tar.gz https://ml-inat-competition-datasets.s3.amazonaws.com/2021/train_mini.tar.gz
+#   tar -xzf train_mini.tar.gz 
+
+# librarian::shelf(
+#   dplyr, glue, jsonlite, listviewer, purrr, readr, tidyjson, tidyr)
+# 
+# train_mini <- jsonlite::read_json("~/courses/train_mini.json")
+# 
+# write_meta <- function(m){
+#   train_mini[[m]]  %>% 
+#     tidyjson::spread_all() %>% 
+#     tibble() %>% 
+#     select(-document.id, -`..JSON`) %>% 
+#     write_csv(
+#       glue("~/Desktop/iNat/train_mini_{m}.csv"))
+# }
+# write_meta("images")
+# write_meta("annotations")
+# write_meta("categories")
+```
