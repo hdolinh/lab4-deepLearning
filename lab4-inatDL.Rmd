@@ -110,9 +110,8 @@ dir.create(validation_aster_dir)
 dir.create(test_aster_dir)
 ```
 
-Here I added the image files from `original_dataset_dir` to my test and train directories. I am splitting the original image files per species as follows:
+Here I added randomly sampled image files from `original_dataset_dir` to my train, validation, and test directories. I am splitting the original image files (50 total) for my species as follows:
 
-- 50 images total
 - 30 images train
 - 10 images validation
 - 10 images test
@@ -146,6 +145,8 @@ file.copy(from = aster_10_v, to = validation_aster_dir)
 aster_10_t <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
 file.copy(from = aster_10_t, to = test_orchid_dir)
 ```
+
+Here I pre-process the images to be a consistent shape.
 
 
 # 2. 2 Species (binary classification) - convolutional neural net. Draw from the dogs vs cats example.
