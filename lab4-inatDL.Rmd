@@ -67,13 +67,114 @@ i10
 
 # show the 10 species directory names
 # saved as a variable here to make for loops below
-files <- basename(dirs_spp)[i10]
+species_10 <- basename(dirs_spp)[i10]
+species_10
 
-# show the first 2 species directory names
+# show the 2 species directory names
 i2 <- i10[1:2]
-basename(dirs_spp)[i2]
+species_2 <- basename(dirs_spp)[i2]
+species_2
+```
+# Setup
+
+```{r}
+# same file paths for both species 2 and species 10
+original_dataset_dir <- "/courses/EDS232/inaturalist-2021/train_mini"
+
+# base file paths
+base_dir <- "/Users/halina/hd-eds-232/lab4-deepLearning"
 ```
 
+Here are my files and folders for species 2
+
+```{r}
+# base directories 
+train_dir_2 <- file.path(base_dir, "train_2")
+validation_dir_2 <- file.path(base_dir, "validation_2")
+test_dir_2 <- file.path(base_dir, "test_2")
+
+# create base train, validate, test directories 
+dir.create(train_dir_2)
+dir.create(validation_dir_2)
+dir.create(test_dir_2)
+
+# for loop to create species specific train, validate, and test directories
+# named directories using the unique 5 digit characters at the start of the file
+for (i in 1:length(species_2)){
+  dir.create(file.path(train_dir_2, str_sub(species_2[[i]], start = 1, end = 5)))
+  dir.create(file.path(validation_dir_2, str_sub(species_2[[i]], start = 1, end = 5)))
+  dir.create(file.path(test_dir_2, str_sub(species_2[[i]], start = 1, end = 5)))
+}
+```
+
+Here are my files and folders for species 10
+
+```{r}
+# base directories 
+train_dir_10 <- file.path(base_dir, "train_10")
+validation_dir_10 <- file.path(base_dir, "validation_10")
+test_dir_10 <- file.path(base_dir, "test_10")
+
+# create base train, validate, test directories 
+dir.create(train_dir_10)
+dir.create(validation_dir_10)
+dir.create(test_dir_10)
+
+# for loop to create species specific train, validate, and test directories
+# named directories using the unique 5 digit characters at the start of the file
+for (i in 1:length(species_10)){
+  dir.create(file.path(train_dir_10, str_sub(species_10[[i]], start = 1, end = 5)))
+  dir.create(file.path(validation_dir_10, str_sub(species_10[[i]], start = 1, end = 5)))
+  dir.create(file.path(test_dir_10, str_sub(species_10[[i]], start = 1, end = 5)))
+}
+```
+
+Here I add the images to the directories I created for species 2
+
+```{r}
+# create test, validation, and training groups of images
+for(i in 1:length(species_2)){
+  # create 5 groups of 10 random samples
+  species_samples_2 <- replicate(5, sample(list.files(paste0(original_dataset_dir, "/", species_2[[i]]), 
+                                                    full.names = TRUE), replace = FALSE, 10))
+  ## train n = 30 ##
+  train <- rbind(species_samples_2[,1], species_samples_2[,2], species_samples_2[,3])
+  file.copy(from = train, 
+            to = paste0(train_dir_2, "/", str_sub(species_2[[i]], start = 1, end = 5)))
+  ## validation n = 10 ##
+  validate <- species_samples_2[,4]
+  file.copy(from = validate,
+            to = paste0(validation_dir_2, "/", str_sub(species_2[[i]], start = 1, end = 5)))
+  ## train n = 10 ##
+  test <- species_samples_2[,5]
+  file.copy(from = test,
+            to = paste0(test_dir_2, "/", str_sub(species_2[[i]], start = 1, end = 5)))
+  }
+```
+
+
+Here I add the images to the directories I created for species 10
+
+```{r}
+# create test, validation, and training groups of images
+for(i in 1:length(species_10)){
+  # create 5 groups of 10 random samples
+  species_samples_10 <- replicate(5, sample(list.files(paste0(original_dataset_dir, "/", species_10[[i]]), 
+                                                    full.names = TRUE), replace = FALSE, 10))
+  ## train n = 30 ##
+  train <- rbind(species_samples_10[,1], species_samples_10[,2], species_samples_10[,3])
+  file.copy(from = train, 
+            to = paste0(train_dir_10, "/", str_sub(species_10[[i]], start = 1, end = 5)))
+  ## validation n = 10 ##
+  validate <- species_samples_10[,4]
+  file.copy(from = validate,
+            to = paste0(validation_dir_10, "/", str_sub(species_10[[i]], start = 1, end = 5)))
+  ## train n = 10 ##
+  test <- species_samples_10[,5]
+  file.copy(from = test,
+            to = paste0(test_dir_10, "/", str_sub(species_10[[i]], start = 1, end = 5)))
+  }
+```
 
 # 1. 2 Species (binary classification) - neural net. Draw from 3.4 🍿 Movies (binary classification). You’ll need to pre-process the images to be a consistent shape first though – see 5.2.4 Data preprocessing.
 
@@ -82,45 +183,27 @@ For this task and the second task, I am only going to use the first two species 
 - 05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora
 - 06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata
 
-Here I am creating the file paths for the train, validatation, and test directories.
+Here I add the images to the directories I created for species 2
 
 ```{r}
-original_dataset_dir <- "/courses/EDS232/inaturalist-2021/train_mini"
-
-# base
-base_dir <- "/Users/halina/hd-eds-232/lab4-deepLearning"
-train_dir <- file.path(base_dir, "train")
-validation_dir <- file.path(base_dir, "validation")
-test_dir <- file.path(base_dir, "test")
-
-# orchid 
-train_orchid_dir <- file.path(train_dir, "orchid")
-validation_orchid_dir <- file.path(validation_dir, "orchid")
-test_orchid_dir <- file.path(test_dir, "orchid")
-
-# aster
-train_aster_dir <- file.path(train_dir, "aster")
-validation_aster_dir <- file.path(validation_dir, "aster")
-test_aster_dir <- file.path(test_dir, "aster")
-```
-
-Here I create the train, validation, and test directories for my current working directory, and my species orchid and aster.
-
-```{r, echo=TRUE, results='hide', eval=TRUE}
-# base
-dir.create(train_dir)
-dir.create(validation_dir)
-dir.create(test_dir)
-
-# orchid
-dir.create(train_orchid_dir)
-dir.create(validation_orchid_dir)
-dir.create(test_orchid_dir)
-
-# aster
-dir.create(train_aster_dir)
-dir.create(validation_aster_dir)
-dir.create(test_aster_dir)
+# create test, validation, and training groups of images
+for(i in 1:length(species_2)){
+  # create 5 groups of 10 random samples
+  species_samples_2 <- replicate(5, sample(list.files(paste0(original_dataset_dir, "/", species_2[[i]]), 
+                                                    full.names = TRUE), replace = FALSE, 10))
+  ## train n = 30 ##
+  train <- rbind(species_samples_2[,1], species_samples_2[,2], species_samples_2[,3])
+  file.copy(from = train, 
+            to = paste0(train_dir, "/", str_sub(species_2[[i]], start = 1, end = 5)))
+  ## validation n = 10 ##
+  validate <- species_samples_2[,4]
+  file.copy(from = validate,
+            to = paste0(validation_dir, "/", str_sub(species_2[[i]], start = 1, end = 5)))
+  ## train n = 10 ##
+  test <- species_samples_2[,5]
+  file.copy(from = test,
+            to = paste0(test_dir, "/", str_sub(species_2[[i]], start = 1, end = 5)))
+  }
 ```
 
 Here I added randomly sampled image files from `original_dataset_dir` to my train, validation, and test directories. I am splitting the original image files (50 total) for my species as follows:
@@ -130,62 +213,26 @@ Here I added randomly sampled image files from `original_dataset_dir` to my trai
 - 10 images test
 
 ```{r}
-# directories for my species
-original_orchid_dir <- "/courses/EDS232/inaturalist-2021/train_mini/05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora"
-
-original_aster_dir <- "/courses/EDS232/inaturalist-2021/train_mini/06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata"
-
-### orchid files ###
-## train n = 30 ##
-orchid_30 <- sample(list.files(original_orchid_dir, full.names = TRUE), 30) 
-# randomly select 30 files using sample() and used list.files() to list the full names of the files from the file path I specified in original_orchid_dir
-file.copy(from = orchid_30, to = train_orchid_dir)
-## validation n = 10 ##
-orchid_10_v <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
-file.copy(from = orchid_10_v, to = validation_orchid_dir)
-## test n = 10 ##
-orchid_10_t <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
-file.copy(from = orchid_10_t, to = test_orchid_dir)
-
-### aster files ###
-## train n = 30 ##
-aster_30 <- sample(list.files(original_aster_dir, full.names = TRUE), 30) 
-file.copy(from = aster_30, to = train_aster_dir)
-## validation n = 10 ##
-aster_10_v <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
-file.copy(from = aster_10_v, to = validation_aster_dir)
-## test n = 10 ##
-aster_10_t <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
-file.copy(from = aster_10_t, to = test_aster_dir)
+# create test, validation, and training groups of images
+for(i in 1:length(species_10)){
+  # create 5 groups of 10 random samples
+  species_samples_10 <- replicate(5, sample(list.files(paste0(original_dataset_dir, "/", species_10[[i]]), 
+                                                    full.names = TRUE), replace = FALSE, 10))
+  ## train n = 30 ##
+  train <- rbind(species_samples_10[,1], species_samples_10[,2], species_samples_10[,3])
+  file.copy(from = train, 
+            to = paste0(train_dir, "/", str_sub(species_10[[i]], start = 1, end = 5)))
+  ## validation n = 10 ##
+  validate <- species_samples_10[,4]
+  file.copy(from = validate,
+            to = paste0(validation_dir, "/", str_sub(species_10[[i]], start = 1, end = 5)))
+  ## train n = 10 ##
+  test <- species_samples_10[,5]
+  file.copy(from = test,
+            to = paste0(test_dir, "/", str_sub(species_10[[i]], start = 1, end = 5)))
+  }
 ```
 
-Here I pre-process the images to be a consistent shape.
-
-```{r}
-## all images will be rescaled by 1/255 ##
-train_datagen <- image_data_generator(rescale = 1/255)
-validation_datagen <- image_data_generator(rescale = 1/255)
-
-train_generator <- flow_images_from_directory(
-  # This is the target directory
-  train_dir,
-  # This is the data generator
-  train_datagen,
-  # All images will be resized to 150x150
-  target_size = c(150, 150),
-  batch_size = 5,
-  # Since we use binary_crossentropy loss, we need binary labels
-  class_mode = "binary")
-# found 60 images belonging to 2 classes
-
-validation_generator <- flow_images_from_directory(
-  validation_dir,
-  validation_datagen,
-  target_size = c(150, 150),
-  batch_size = 5,
-  class_mode = "binary")
-# found 20 images belonging to 2 classes
-```
 
 Here I am looking at the output of the `train_generator`.
 
@@ -236,6 +283,9 @@ if (!file.exists(mdl1_history_rds) | !file.exists(mdl1_h5)){
     validation_steps = 5)
 }
 ```
+
+use plot history
+and history gives loss and accuracy outputs
 
 # 2. 2 Species (binary classification) - convolutional neural net. Draw from the dogs vs cats example.
 

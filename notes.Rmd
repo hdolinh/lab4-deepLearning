@@ -82,3 +82,82 @@ if (!file.exists(mdl1_history_rds) | !file.exists(mdl1_h5)){
 #}
 ```
 
+Here I am creating the file paths for the train, validatation, and test directories.
+
+```{r}
+original_dataset_dir <- "/courses/EDS232/inaturalist-2021/train_mini"
+
+# base
+base_dir <- "/Users/halina/hd-eds-232/lab4-deepLearning"
+train_dir <- file.path(base_dir, "train")
+validation_dir <- file.path(base_dir, "validation")
+test_dir <- file.path(base_dir, "test")
+
+# orchid 
+train_orchid_dir <- file.path(train_dir, "orchid")
+validation_orchid_dir <- file.path(validation_dir, "orchid")
+test_orchid_dir <- file.path(test_dir, "orchid")
+
+# aster
+train_aster_dir <- file.path(train_dir, "aster")
+validation_aster_dir <- file.path(validation_dir, "aster")
+test_aster_dir <- file.path(test_dir, "aster")
+```
+
+
+Here I create the train, validation, and test directories for my current working directory, and my species orchid and aster.
+
+```{r, echo=TRUE, results='hide', eval=TRUE}
+# base
+dir.create(train_dir)
+dir.create(validation_dir)
+dir.create(test_dir)
+
+# orchid
+dir.create(train_orchid_dir)
+dir.create(validation_orchid_dir)
+dir.create(test_orchid_dir)
+
+# aster
+dir.create(train_aster_dir)
+dir.create(validation_aster_dir)
+dir.create(test_aster_dir)
+```
+
+
+
+Here I added randomly sampled image files from `original_dataset_dir` to my train, validation, and test directories. I am splitting the original image files (50 total) for my species as follows:
+
+- 30 images train
+- 10 images validation
+- 10 images test
+
+```{r}
+# directories for my species
+original_orchid_dir <- "/courses/EDS232/inaturalist-2021/train_mini/05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora"
+
+original_aster_dir <- "/courses/EDS232/inaturalist-2021/train_mini/06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata"
+
+### orchid files ###
+## train n = 30 ##
+orchid_30 <- sample(list.files(original_orchid_dir, full.names = TRUE), 30) 
+# randomly select 30 files using sample() and used list.files() to list the full names of the files from the file path I specified in original_orchid_dir
+file.copy(from = orchid_30, to = train_orchid_dir)
+## validation n = 10 ##
+orchid_10_v <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
+file.copy(from = orchid_10_v, to = validation_orchid_dir)
+## test n = 10 ##
+orchid_10_t <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
+file.copy(from = orchid_10_t, to = test_orchid_dir)
+
+### aster files ###
+## train n = 30 ##
+aster_30 <- sample(list.files(original_aster_dir, full.names = TRUE), 30) 
+file.copy(from = aster_30, to = train_aster_dir)
+## validation n = 10 ##
+aster_10_v <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
+file.copy(from = aster_10_v, to = validation_aster_dir)
+## test n = 10 ##
+aster_10_t <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
+file.copy(from = aster_10_t, to = test_aster_dir)
+```
