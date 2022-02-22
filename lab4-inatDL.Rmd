@@ -133,18 +133,18 @@ orchid_10_v <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
 file.copy(from = orchid_10_v, to = validation_orchid_dir)
 ## test n = 10 ##
 orchid_10_t <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
-file.copy(from = orchid_10_t, to = test_orchid_dir)
+file.copy(from = orchid_10_t, to = test_aster_dir)
 
 ### aster files ###
 ## train n = 30 ##
-aster_30 <- sample(list.files(original_aster_dir, full.names = TRUE), 1) 
+aster_30 <- sample(list.files(original_aster_dir, full.names = TRUE), 30) 
 file.copy(from = aster_30, to = train_aster_dir)
 ## validation n = 10 ##
-orchid_10_v <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
-file.copy(from = orchid_10_v, to = validation_orchid_dir)
+aster_10_v <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
+file.copy(from = aster_10_v, to = validation_aster_dir)
 ## test n = 10 ##
-orchid_10_t <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
-file.copy(from = orchid_10_t, to = test_orchid_dir)
+aster_10_t <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
+file.copy(from = aster_10_t, to = test_orchid_dir)
 ```
 
 
