@@ -246,6 +246,25 @@ if (!file.exists(mdl1_history_rds) | !file.exists(mdl1_h5)){
 
 # 2. 2 Species (binary classification) - convolutional neural net. Draw from the dogs vs cats example.
 
+flatten before the end but not in the beginning
+dense = 1 for the last layer in the binary model
+change input shape
+
+
 # 3. 10 Species (multi-class classification) - neural net. Draw from 3.5 📰 Newswires (multi-class classification).
 
+do 30 10 10 for all 10 species
+preprocess again
+class mode = categorical (not binary)
+check: 300 images belonging to 10 classes
+check batch size
+input shape
+last layer needs to be dense = 10
+loss is categorical cross entropy 
+
+
 # 4. 10 Species (multi-class classification) - convolutional neural net. Draw from dogs vs cats example and update necessary values to go from binary to mult-class classification
+
+flatten
+last line 10
+categorical cross entropy
