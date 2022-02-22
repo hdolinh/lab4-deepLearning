@@ -66,7 +66,8 @@ i10 <- sample(1:n_spp, 10)
 i10
 
 # show the 10 species directory names
-basename(dirs_spp)[i10]
+# saved as a variable here to make for loops below
+files <- basename(dirs_spp)[i10]
 
 # show the first 2 species directory names
 i2 <- i10[1:2]
@@ -76,7 +77,7 @@ basename(dirs_spp)[i2]
 
 # 1. 2 Species (binary classification) - neural net. Draw from 3.4 🍿 Movies (binary classification). You’ll need to pre-process the images to be a consistent shape first though – see 5.2.4 Data preprocessing.
 
-For this task, I am only going to use the first two species from my full list:
+For this task and the second task, I am only going to use the first two species from my full list:
 
 - 05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora
 - 06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata
@@ -290,39 +291,113 @@ input shape
 last layer needs to be dense = 10
 loss is categorical cross entropy 
 
+For this task and the fourth task, I am going to use all ten species from my full list:
+
+- 05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora
+- 06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata
+- 05437_Fungi_Ascomycota_Lecanoromycetes_Rhizocarpales_Rhizocarpaceae_Rhizocarpon_geographicum
+- 00372_Animalia_Arthropoda_Insecta_Coleoptera_Passalidae_Odontotaenius_disjunctus
+
+- 01212_Animalia_Arthropoda_Insecta_Lepidoptera_Geometridae_Euchlaena_serrata
+
+- 07258_Plantae_Tracheophyta_Magnoliopsida_Brassicales_Brassicaceae_Lepidium_draba
+- 06740_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Delairea_odorata
+- 09917_Plantae_Tracheophyta_Polypodiopsida_Polypodiales_Blechnaceae_Cranfillia_fluviatilis
+- 02761_Animalia_Chordata_Actinopterygii_Cypriniformes_Catostomidae_Catostomus_commersonii
+- 03624_Animalia_Chordata_Aves_Galliformes_Odontophoridae_Colinus_virginianus
+
+Here I am creating the file paths for the train, validatation, and test directories.
+
 ```{r}
-# directories for my species
-original_orchid_dir <- "/courses/EDS232/inaturalist-2021/train_mini/05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora"
+# fungi 
+train_fungi_dir <- file.path(train_dir, "fungi")
+validation_fungi_dir <- file.path(validation_dir, "fungi")
+test_fungi_dir <- file.path(test_dir, "fungi")
 
-original_aster_dir <- "/courses/EDS232/inaturalist-2021/train_mini/06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata"
+# passalidae
+train_passalidae_dir <- file.path(train_dir, "passalidae")
+validation_passalidae_dir <- file.path(validation_dir, "passalidae")
+test_passalidae_dir <- file.path(test_dir, "passalidae")
 
-### orchid files ###
-## train n = 30 ##
-orchid_30 <- sample(list.files(original_orchid_dir, full.names = TRUE), 30) 
-# randomly select 30 files using sample() and used list.files() to list the full names of the files from the file path I specified in original_orchid_dir
-file.copy(from = orchid_30, to = train_orchid_dir)
-## validation n = 10 ##
-orchid_10_v <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
-file.copy(from = orchid_10_v, to = validation_orchid_dir)
-## test n = 10 ##
-orchid_10_t <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
-file.copy(from = orchid_10_t, to = test_orchid_dir)
-
-### aster files ###
-## train n = 30 ##
-aster_30 <- sample(list.files(original_aster_dir, full.names = TRUE), 30) 
-file.copy(from = aster_30, to = train_aster_dir)
-## validation n = 10 ##
-aster_10_v <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
-file.copy(from = aster_10_v, to = validation_aster_dir)
-## test n = 10 ##
-aster_10_t <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
-file.copy(from = aster_10_t, to = test_aster_dir)
+# geometridae
+train_geometridae_dir <- file.path(train_dir, "geometridae")
+validation_geometridae_dir <- file.path(validation_dir, "geometridae")
+test_geometridae_dir <- file.path(test_dir, "geometridae")
 ```
 
 
+```{r}
+### for loop??? ####
 
+# for(i in seq_along(files)){
+#   train_i_dir <- file.path(train_dir, "i")
+#   validation_i_dir <- file.path(validation_dir, "i")
+#   test_i_dir <- file.path(test_dir, "i")
+# }
+```
 
+Here I create the train, validation, and test directories for all 10 species (except the first two which have already been created).
+
+```{r, echo=TRUE, results='hide', eval=TRUE}
+# fungi
+dir.create(train_fungi_dir)
+dir.create(validation_fungi_dir)
+dir.create(test_fungi_dir)
+
+# passalidae
+dir.create(train_passalidae_dir)
+dir.create(validation_passalidae_dir)
+dir.create(test_passalidae_dir)
+
+# geometridae
+dir.create(train_geometridae_dir)
+dir.create(validation_geometridae_dir)
+dir.create(test_geometridae_dir)
+```
+
+Here I am creating the file paths for the train, validatation, and test directories.
+
+```{r}
+# directories for my species
+original_fungi_dir <- "/courses/EDS232/inaturalist-2021/train_mini/05437_Fungi_Ascomycota_Lecanoromycetes_Rhizocarpales_Rhizocarpaceae_Rhizocarpon_geographicum"
+
+original_passalidae_dir <- "/courses/EDS232/inaturalist-2021/train_mini/00372_Animalia_Arthropoda_Insecta_Coleoptera_Passalidae_Odontotaenius_disjunctus"
+
+original_geometridae_dir <- "/courses/EDS232/inaturalist-2021/train_mini/01212_Animalia_Arthropoda_Insecta_Lepidoptera_Geometridae_Euchlaena_serrata"
+
+### fungi files ###
+## train n = 30 ##
+fungi_30 <- sample(list.files(original_fungi_dir, full.names = TRUE), 30) 
+file.copy(from = fungi_30, to = train_fungi_dir)
+## validation n = 10 ##
+fungi_10_v <- sample(list.files(original_fungi_dir, full.names = TRUE), 10)
+file.copy(from = fungi_10_v, to = validation_fungi_dir)
+## test n = 10 ##
+fungi_10_t <- sample(list.files(original_fungi_dir, full.names = TRUE), 10)
+file.copy(from = fungi_10_t, to = test_fungi_dir)
+
+### passalidae files ###
+## train n = 30 ##
+passalidae_30 <- sample(list.files(original_passalidae_dir, full.names = TRUE), 30) 
+file.copy(from = passalidae_30, to = train_passalidae_dir)
+## validation n = 10 ##
+passalidae_10_v <- sample(list.files(original_passalidae_dir, full.names = TRUE), 10)
+file.copy(from = passalidae_10_v, to = validation_passalidae_dir)
+## test n = 10 ##
+passalidae_10_t <- sample(list.files(original_passalidae_dir, full.names = TRUE), 10)
+file.copy(from = passalidae_10_t, to = test_passalidae_dir)
+
+### geometridae files ###
+## train n = 30 ##
+geometridae_30 <- sample(list.files(original_geometridae_dir, full.names = TRUE), 30) 
+file.copy(from = geometridae_30, to = train_geometridae_dir)
+## validation n = 10 ##
+geometridae_10_v <- sample(list.files(original_geometridae_dir, full.names = TRUE), 10)
+file.copy(from = geometridae_10_v, to = validation_geometridae_dir)
+## test n = 10 ##
+geometridae_10_t <- sample(list.files(original_geometridae_dir, full.names = TRUE), 10)
+file.copy(from = geometridae_10_t, to = test_geometridae_dir)
+```
 # 4. 10 Species (multi-class classification) - convolutional neural net. Draw from dogs vs cats example and update necessary values to go from binary to mult-class classification
 
 flatten
