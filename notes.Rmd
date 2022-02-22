@@ -34,3 +34,27 @@ knitr::opts_chunk$set(echo = TRUE)
 # write_meta("annotations")
 # write_meta("categories")
 ```
+
+Helpful `file.copy()` example
+
+```{r}
+current.folder <- "E:/ProjectDirectory/Data/"
+new.folder <- "E:/ProjectDirectory/NewData/"
+list.of.files <- list.files(current.folder, full.names = T)
+# copy the files to the new folder
+file.copy(list.of.files, new.folder, overwrite = T)
+
+### my code ###
+file.copy()
+# current folder
+original_orchid_dir
+# orchid files
+original_orchid_files <- list.files(original_orchid_dir, full.names = T)
+# new folder
+train_orchid_dir
+
+# basenames is a good function to know
+original_orchid_files <- list.files(original_orchid_dir, full.names = TRUE)
+head(basename(original_orchid_files))
+```
+

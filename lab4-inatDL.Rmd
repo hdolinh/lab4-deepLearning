@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+librarian::shelf(digest, dplyr)
 ```
 
 # Lab 4 Deep Learning: iNaturalist
@@ -17,9 +18,135 @@ The main lab that you'll turn in is to apply these techniques to a small subset 
 
 # Setup
 
-Here I am generating which species I am going to use
+Here I am generating which 10 species I am going to use, which are:
+
+- 05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora       
+- 06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata         
+- 05437_Fungi_Ascomycota_Lecanoromycetes_Rhizocarpales_Rhizocarpaceae_Rhizocarpon_geographicum
+- 00372_Animalia_Arthropoda_Insecta_Coleoptera_Passalidae_Odontotaenius_disjunctus           
+- 01212_Animalia_Arthropoda_Insecta_Lepidoptera_Geometridae_Euchlaena_serrata               
+- 07258_Plantae_Tracheophyta_Magnoliopsida_Brassicales_Brassicaceae_Lepidium_draba           
+- 06740_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Delairea_odorata             
+- 09917_Plantae_Tracheophyta_Polypodiopsida_Polypodiales_Blechnaceae_Cranfillia_fluviatilis 
+- 02761_Animalia_Chordata_Actinopterygii_Cypriniformes_Catostomidae_Catostomus_commersonii   
+- 03624_Animalia_Chordata_Aves_Galliformes_Odontophoridae_Colinus_virginianus
+
+```{r}
+# path to folder containing species directories of images
+dir_train_mini <- "/courses/EDS232/inaturalist-2021/train_mini"
+
+# path to output table of paths, which could be read by R, eg read_csv()
+inat_spp_dirs_csv <- "~/inat_species_dirs.csv" # I don't see this csv in taylor??
+
+# get list of directories, one per species (n = 10,000 species)
+dirs_spp <- list.dirs(dir_train_mini, recursive = F)
+n_spp <- length(dirs_spp)
+
+# set seed (for reproducible results) 
+# just before sampling (otherwise get different results)
+# based on your username (unique amongst class)
+Sys.info()[["user"]] %>% # sys.info pulls my user name
+  digest::digest2int() %>% 
+  set.seed()
+i10 <- sample(1:n_spp, 10)
+
+# show the 10 indices sampled of the 10,000 possible 
+i10
+
+# show the 10 species directory names
+basename(dirs_spp)[i10]
+
+# show the first 2 species directory names
+i2 <- i10[1:2]
+basename(dirs_spp)[i2]
+```
+
 
 # 1. 2 Species (binary classification) - neural net. Draw from 3.4 🍿 Movies (binary classification). You’ll need to pre-process the images to be a consistent shape first though – see 5.2.4 Data preprocessing.
+
+For this task, I am only going to use the first two species from my full list:
+
+- 05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora
+- 06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata
+
+Here I am creating the file paths for the train, validatation, and test directories.
+
+```{r}
+original_dataset_dir <- "/courses/EDS232/inaturalist-2021/train_mini"
+
+# base
+base_dir <- "/Users/halina/hd-eds-232/lab4-deepLearning"
+train_dir <- file.path(base_dir, "train")
+validation_dir <- file.path(base_dir, "validation")
+test_dir <- file.path(base_dir, "test")
+
+# orchid 
+train_orchid_dir <- file.path(train_dir, "orchid")
+validation_orchid_dir <- file.path(validation_dir, "orchid")
+test_orchid_dir <- file.path(test_dir, "orchid")
+
+# aster
+train_aster_dir <- file.path(train_dir, "aster")
+validation_aster_dir <- file.path(validation_dir, "aster")
+test_aster_dir <- file.path(test_dir, "aster")
+```
+
+Here I create the train, validation, and test directories for my current working directory, and my species orchid and aster.
+
+```{r, echo=TRUE, results='hide', eval=TRUE}
+# base
+dir.create(train_dir)
+dir.create(validation_dir)
+dir.create(test_dir)
+
+# orchid
+dir.create(train_orchid_dir)
+dir.create(validation_orchid_dir)
+dir.create(test_orchid_dir)
+
+# aster
+dir.create(train_aster_dir)
+dir.create(validation_aster_dir)
+dir.create(test_aster_dir)
+```
+
+Here I added the image files from `original_dataset_dir` to my test and train directories. I am splitting the original image files per species as follows:
+
+- 50 images total
+- 30 images train
+- 10 images validation
+- 10 images test
+
+```{r}
+# directories for my species
+original_orchid_dir <- "/courses/EDS232/inaturalist-2021/train_mini/05992_Plantae_Tracheophyta_Liliopsida_Asparagales_Orchidaceae_Anacamptis_coriophora"
+
+original_aster_dir <- "/courses/EDS232/inaturalist-2021/train_mini/06622_Plantae_Tracheophyta_Magnoliopsida_Asterales_Asteraceae_Arctotheca_prostrata"
+
+### orchid files ###
+## train n = 30 ##
+orchid_30 <- sample(list.files(original_orchid_dir, full.names = TRUE), 30) 
+# randomly select 30 files using sample() and used list.files() to list the full names of the files from the file path I specified in original_orchid_dir
+file.copy(from = orchid_30, to = train_orchid_dir)
+## validation n = 10 ##
+orchid_10_v <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
+file.copy(from = orchid_10_v, to = validation_orchid_dir)
+## test n = 10 ##
+orchid_10_t <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
+file.copy(from = orchid_10_t, to = test_orchid_dir)
+
+### aster files ###
+## train n = 30 ##
+aster_30 <- sample(list.files(original_aster_dir, full.names = TRUE), 1) 
+file.copy(from = aster_30, to = train_aster_dir)
+## validation n = 10 ##
+orchid_10_v <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
+file.copy(from = orchid_10_v, to = validation_orchid_dir)
+## test n = 10 ##
+orchid_10_t <- sample(list.files(original_orchid_dir, full.names = TRUE), 10)
+file.copy(from = orchid_10_t, to = test_orchid_dir)
+```
+
 
 # 2. 2 Species (binary classification) - convolutional neural net. Draw from the dogs vs cats example.
 
