@@ -156,7 +156,6 @@ file.copy(from = aster_10_v, to = validation_aster_dir)
 ## test n = 10 ##
 aster_10_t <- sample(list.files(original_aster_dir, full.names = TRUE), 10)
 file.copy(from = aster_10_t, to = test_aster_dir)
-
 ```
 
 Here I pre-process the images to be a consistent shape.
@@ -211,10 +210,6 @@ x_train <- vectorize_sequences(train_data)
 # Our vectorized test data
 x_test <- vectorize_sequences(test_data)
 ```
-
-
-
-
 
 
 # 2. 2 Species (binary classification) - convolutional neural net. Draw from the dogs vs cats example.
