@@ -184,6 +184,8 @@ validation_generator_2 <- flow_images_from_directory(
   class_mode = "binary")
 ```
 
+**Note: only 43 images out of 60....**
+
 ## Preprocessing the data for ten species
 
 ```{r}
@@ -192,7 +194,7 @@ train_generator_10 <- flow_images_from_directory(
   train_datagen,
   target_size = c(150, 150),
   batch_size = 5,
-  class_mode = "binary") 
+  class_mode = "categorical") 
 
 validation_generator_10 <- flow_images_from_directory(
   validation_dir_10,
@@ -202,15 +204,14 @@ validation_generator_10 <- flow_images_from_directory(
   class_mode = "binary")
 ```
 
-
-**Note: only 43 images out of 60....**
+**Note 116/100 and 266/300**
 
 # 1. Two Species (binary classification) using neural net
 
 ## Building the network
 
 ```{r}
-model <- keras_model_sequential() %>% 
+model_nn <- keras_model_sequential() %>% 
   layer_dense(units = 16, activation = "relu", input_shape = c(150, 150)) %>%
   layer_flatten() %>% 
   layer_dense(units = 16, activation = "relu") %>% 
@@ -219,7 +220,7 @@ model <- keras_model_sequential() %>%
 
 
 ```{r}
-model %>% compile(
+model_nn %>% compile(
   optimizer = "rmsprop",
   loss      = "binary_crossentropy",
   metrics   = c("accuracy"))
@@ -227,11 +228,11 @@ model %>% compile(
 
 
 ```{r}
-history <- model %>% fit(
-    train_generator,
+history <- model_nn %>% fit(
+    train_generator_2,
     steps_per_epoch = 5,
     epochs = 30,
-    validation_data = validation_generator,
+    validation_data = validation_generator_2,
     validation_steps = 5)
 ```
 
@@ -255,7 +256,7 @@ test_generator <- flow_images_from_directory(
   batch_size = 20,
   class_mode = "binary"
 )
-model %>% evaluate(test_generator, steps = 50)
+model %>% evaluate(test_generator, steps = 30)
 ```
 
 # 2. Two Species (binary classification) - using convolutional neural net
