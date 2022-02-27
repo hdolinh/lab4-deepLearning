@@ -317,9 +317,9 @@ model_cnn %>% evaluate(test_generator_2, steps = 4)
 
 ```{r}
 model_mc_nn <- keras_model_sequential() %>% 
-  layer_dense(units = 64, activation = "relu", input_shape = c(150, 150, 3)) %>%
+  layer_dense(units = 128, activation = "relu", input_shape = c(150, 150, 3)) %>%
   layer_flatten() %>% 
-  layer_dense(units = 64, activation = "relu") %>% 
+  layer_dense(units = 128, activation = "relu") %>% 
   layer_dense(units =  10, activation = "softmax") 
 # changed from sigmoid to softmax and changed from 1 to 10 units
 ```
@@ -409,7 +409,7 @@ test_generator_10 <- flow_images_from_directory(
   batch_size = 5,
   class_mode = "categorical"
 )
-model_mc_cnn %>% evaluate(test_generator_10, steps = 4)
+model_mc_cnn %>% evaluate(test_generator_10, steps = 24)
 ```
 
 
