@@ -320,7 +320,8 @@ model_mc_nn <- keras_model_sequential() %>%
   layer_dense(units = 64, activation = "relu", input_shape = c(150, 150, 3)) %>%
   layer_flatten() %>% 
   layer_dense(units = 64, activation = "relu") %>% 
-  layer_dense(units =  10, activation = "softmax") # use softmax when using more than two species 
+  layer_dense(units =  10, activation = "softmax") 
+# changed from sigmoid to softmax and changed from 1 to 10 units
 ```
 
 
@@ -355,13 +356,13 @@ test_generator_10 <- flow_images_from_directory(
   batch_size = 5,
   class_mode = "categorical"
 )
-model_mc_nn %>% evaluate(test_generator_10, steps = 4) 
+model_mc_nn %>% evaluate(test_generator_10, steps = 24) 
 ```
 
 # 4. Ten Species (multi-class classification) - convolutional neural net
 
 ```{r}
-model_mc_nn <- keras_model_sequential() %>% 
+model_mc_cnn <- keras_model_sequential() %>% 
   layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = "relu",
                 input_shape = c(150, 150, 3)) %>% 
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
@@ -373,12 +374,12 @@ model_mc_nn <- keras_model_sequential() %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_flatten() %>% 
   layer_dense(units = 512, activation = "relu") %>% 
-  layer_dense(units = 10, activation = "sigmoid")
+  layer_dense(units = 10, activation = "softmax")
 ```
 
 
 ```{r}
-model_mc_nn %>% compile(
+model_mc_cnn %>% compile(
   optimizer = "rmsprop",
   loss      = "categorical_crossentropy",
   metrics   = c("accuracy"))
@@ -386,29 +387,29 @@ model_mc_nn %>% compile(
 
 
 ```{r}
-history_mc_nn <- model_mc_nn %>% fit(
-    train_generator,
+history_mc_cnn <- model_mc_cnn %>% fit(
+    train_generator_10,
     steps_per_epoch = 5,
     epochs = 30,
-    validation_data = validation_generator,
+    validation_data = validation_generator_10,
     validation_steps = 5)
 ```
 
 ```{r}
-plot(history_mc_nn)
+plot(history_mc_cnn)
 ```
 
 ## Evaluate Model
 
 ```{r}
-test_generator <- flow_images_from_directory(
-  test_dir_2,
+test_generator_10 <- flow_images_from_directory(
+  test_dir_10,
   test_datagen,
   target_size = c(150, 150),
   batch_size = 5,
-  class_mode = "binary"
+  class_mode = "categorical"
 )
-model_mc_nn %>% evaluate(test_generator, steps = 4) # 4 steps?? compare
+model_mc_cnn %>% evaluate(test_generator_10, steps = 4)
 ```
 
 
