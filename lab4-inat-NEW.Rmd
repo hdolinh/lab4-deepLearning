@@ -90,7 +90,7 @@ test_dir_10 <- file.path(base_dir, "test_10")
 ```
 
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, warning=FALSE}
 # create base directories (train, validate, test) for the two species and the ten species 
 dir.create(train_dir_2)
 dir.create(validation_dir_2)
@@ -189,6 +189,7 @@ validation_generator_2 <- flow_images_from_directory(
 ## Preprocessing the data for ten species
 
 ```{r}
+# Since we use categorical_crossentropy loss for 10 species, we need binary labels
 train_generator_10 <- flow_images_from_directory(
   train_dir_10,
   train_datagen,
@@ -201,7 +202,7 @@ validation_generator_10 <- flow_images_from_directory(
   validation_datagen,
   target_size = c(150, 150),
   batch_size = 5,
-  class_mode = "binary")
+  class_mode = "categorical")
 ```
 
 **Note 116/100 and 266/300**
@@ -212,10 +213,12 @@ validation_generator_10 <- flow_images_from_directory(
 
 ```{r}
 model_nn <- keras_model_sequential() %>% 
-  layer_dense(units = 16, activation = "relu", input_shape = c(150, 150)) %>%
+  layer_dense(units = 16, activation = "relu", input_shape = c(150, 150, 3)) %>%
   layer_flatten() %>% 
   layer_dense(units = 16, activation = "relu") %>% 
   layer_dense(units =  1, activation = "sigmoid")
+
+# 3 in input_shape refers to RGB bands
 ```
 
 
@@ -228,7 +231,7 @@ model_nn %>% compile(
 
 
 ```{r}
-history <- model_nn %>% fit(
+history_nn <- model_nn %>% fit(
     train_generator_2,
     steps_per_epoch = 5,
     epochs = 30,
@@ -237,26 +240,20 @@ history <- model_nn %>% fit(
 ```
 
 ```{r}
-plot(history)
-```
-
-History results of neural net:
-
-```{r}
-history
+plot(history_nn)
 ```
 
 ## Evaluate Model
 
 ```{r}
-test_generator <- flow_images_from_directory(
+test_generator_2 <- flow_images_from_directory(
   test_dir_2,
   test_datagen,
   target_size = c(150, 150),
-  batch_size = 20,
+  batch_size = 5,
   class_mode = "binary"
 )
-model %>% evaluate(test_generator, steps = 30)
+model_nn %>% evaluate(test_generator_2, steps = 4) # changed steps from 30 to 4 
 ```
 
 # 2. Two Species (binary classification) - using convolutional neural net
@@ -276,7 +273,7 @@ model_cnn <- keras_model_sequential() %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_flatten() %>% 
   layer_dense(units = 512, activation = "relu") %>% 
-  layer_dense(units = 1, activation = "sigmoid")
+  layer_dense(units = 1, activation = "sigmoid") # use sigmoid for binary
 ```
 
 
@@ -290,10 +287,10 @@ model_cnn %>% compile(
 
 ```{r}
 history_cnn <- model_cnn %>% fit(
-    train_generator,
+    train_generator_2,
     steps_per_epoch = 5,
     epochs = 30,
-    validation_data = validation_generator,
+    validation_data = validation_generator_2,
     validation_steps = 5)
 ```
 
@@ -301,22 +298,17 @@ history_cnn <- model_cnn %>% fit(
 plot(history_cnn)
 ```
 
-History results of convolutional neural net:
-
-```{r}
-history_cnn
-```
 ## Evaluate Model
 
 ```{r}
-test_generator <- flow_images_from_directory(
+test_generator_2 <- flow_images_from_directory(
   test_dir_2,
   test_datagen,
   target_size = c(150, 150),
   batch_size = 5,
   class_mode = "binary"
 )
-model_cnn %>% evaluate(test_generator, steps = 4) # 4 steps?? compare
+model_cnn %>% evaluate(test_generator_2, steps = 4)
 ```
 
 # 3. Ten Species (multi-class classification) - neural net
@@ -325,10 +317,10 @@ model_cnn %>% evaluate(test_generator, steps = 4) # 4 steps?? compare
 
 ```{r}
 model_mc_nn <- keras_model_sequential() %>% 
-  layer_dense(units = 16, activation = "relu", input_shape = c(150, 150, 3)) %>%
+  layer_dense(units = 64, activation = "relu", input_shape = c(150, 150, 3)) %>%
   layer_flatten() %>% 
-  layer_dense(units = 16, activation = "relu") %>% 
-  layer_dense(units =  1, activation = "sigmoid")
+  layer_dense(units = 64, activation = "relu") %>% 
+  layer_dense(units =  10, activation = "softmax") # use softmax when using more than two species 
 ```
 
 
@@ -342,10 +334,10 @@ model_mc_nn %>% compile(
 
 ```{r}
 history_mc_nn <- model_mc_nn %>% fit(
-    train_generator,
+    train_generator_10,
     steps_per_epoch = 5,
     epochs = 30,
-    validation_data = validation_generator,
+    validation_data = validation_generator_10,
     validation_steps = 5)
 ```
 
@@ -356,14 +348,14 @@ plot(history_mc_nn)
 ## Evaluate Model
 
 ```{r}
-test_generator <- flow_images_from_directory(
-  test_dir_2,
+test_generator_10 <- flow_images_from_directory(
+  test_dir_10,
   test_datagen,
   target_size = c(150, 150),
   batch_size = 5,
-  class_mode = "binary"
+  class_mode = "categorical"
 )
-model_mc_nn %>% evaluate(test_generator, steps = 4) # 4 steps?? compare
+model_mc_nn %>% evaluate(test_generator_10, steps = 4) 
 ```
 
 # 4. Ten Species (multi-class classification) - convolutional neural net
@@ -381,7 +373,7 @@ model_mc_nn <- keras_model_sequential() %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_flatten() %>% 
   layer_dense(units = 512, activation = "relu") %>% 
-  layer_dense(units = 1, activation = "sigmoid")
+  layer_dense(units = 10, activation = "sigmoid")
 ```
 
 
