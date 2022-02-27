@@ -184,7 +184,7 @@ validation_generator_2 <- flow_images_from_directory(
   class_mode = "binary")
 ```
 
-**Note: only 43 images out of 60....**
+**Note: only 43/60....**
 
 ## Preprocessing the data for ten species
 
@@ -253,7 +253,7 @@ test_generator_2 <- flow_images_from_directory(
   batch_size = 5,
   class_mode = "binary"
 )
-model_nn %>% evaluate(test_generator_2, steps = 4) # changed steps from 30 to 4 
+model_nn <- model_nn %>% evaluate(test_generator_2, steps = 4) # changed steps from 30 to 4 
 ```
 
 # 2. Two Species (binary classification) - using convolutional neural net
@@ -308,7 +308,7 @@ test_generator_2 <- flow_images_from_directory(
   batch_size = 5,
   class_mode = "binary"
 )
-model_cnn %>% evaluate(test_generator_2, steps = 4)
+model_cnn <- model_cnn %>% evaluate(test_generator_2, steps = 4)
 ```
 
 # 3. Ten Species (multi-class classification) - neural net
@@ -356,7 +356,7 @@ test_generator_10 <- flow_images_from_directory(
   batch_size = 5,
   class_mode = "categorical"
 )
-model_mc_nn %>% evaluate(test_generator_10, steps = 24) 
+model_mc_nn <- model_mc_nn %>% evaluate(test_generator_10, steps = 24) 
 ```
 
 # 4. Ten Species (multi-class classification) - convolutional neural net
@@ -409,7 +409,23 @@ test_generator_10 <- flow_images_from_directory(
   batch_size = 5,
   class_mode = "categorical"
 )
-model_mc_cnn %>% evaluate(test_generator_10, steps = 24)
+model_mc_cnn <- model_mc_cnn %>% evaluate(test_generator_10, steps = 24)
 ```
+## Comparing standard neural network and convolutional neural network results
 
+For my first two models, where I am only classifying two species I got the following results:
+
+- **standard neural network:** `r round(model_nn[2]*100, 0)` percent for accuracy and `r round(model_nn[1]*100, 0)` percent for loss.
+
+- **convolutional neural network:** `r round(model_cnn[2]*100, 0)` percent for accuracy and `r round(model_cnn[1]*100, 0)` percent for loss.
+
+The convolutional neural network performed better than the standard neural network and this was expected because the convolutional neural network is a more complex model. Additionally, I know these accuracy and loss numbers are reasonable because they are better than the standard neural network, which is a simpler model.
+
+For my last two models, where I am classifying ten species I got the following results:
+
+- **standard neural network:** `r round(model_mc_nn[2]*100, 0)` percent for accuracy and `r round(model_mc_nn[1]*100, 0)` percent for loss.
+
+- **convolutional neural network:** `r round(model_mc_cnn[2]*100, 0)` percent for accuracy and `r round(model_mc_cnn[1]*100, 0)` percent for loss.
+
+For these multi-class classification, my accuracy for my standard neural network model was higher than my convolutional neural network model. This tells me that the convolutional neural network is likely overfitting the model since we expect this model to perform better than the standard neural network model. Looking closer at the loss and accuracy for the standard neural network, I see that while I have a reasonably high accuracy, the loss is also very high. This tells me that I probably made huge errors on a few data, which is expected since I have very few images that I am using the model on.
 
